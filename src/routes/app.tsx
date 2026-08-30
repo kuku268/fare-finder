@@ -1,23 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Plane, LogOut, Bell } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { Plane, LogOut, Bell } from "lucide-react";
+import { useLoaderData, useNavigate } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/lib/use-page-meta";
 
-export const Route = createFileRoute("/_authenticated/app")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Flight Price Notifier" },
-      { name: "description", content: "你的航線追蹤儀表板。" },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: AppDashboard,
-});
+import type { requireAuthLoader } from "./require-auth";
 
-function AppDashboard() {
-  const { user } = Route.useRouteContext();
+export function AppDashboard() {
+  usePageMeta({
+    title: "Dashboard — Flight Price Notifier",
+    description: "你的航線追蹤儀表板。",
+    robots: "noindex",
+  });
+  const { user } = useLoaderData() as Awaited<ReturnType<typeof requireAuthLoader>>;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -25,7 +23,7 @@ function AppDashboard() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate("/sign-in", { replace: true });
   };
 
   return (

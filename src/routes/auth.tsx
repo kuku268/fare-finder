@@ -1,11 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
 import { Plane, Loader2 } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -13,27 +11,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/lib/use-page-meta";
 
-export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [
-      { title: "Sign in — Flight Price Notifier" },
-      {
-        name: "description",
-        content: "登入或註冊 Flight Price Notifier，開始追蹤機票價格。",
-      },
-      { property: "og:title", content: "Sign in — Flight Price Notifier" },
-      {
-        property: "og:description",
-        content: "登入或註冊 Flight Price Notifier，開始追蹤機票價格。",
-      },
-    ],
-  }),
-  component: AuthPage,
-});
+export type AuthTab = "signin" | "signup";
 
-function AuthPage() {
+export function AuthPage({ tab }: { tab: AuthTab }) {
+  usePageMeta({
+    title: "Sign in — Flight Price Notifier",
+    description: "登入或註冊 Flight Price Notifier，開始追蹤機票價格。",
+    ogTitle: "Sign in — Flight Price Notifier",
+    ogDescription: "登入或註冊 Flight Price Notifier，開始追蹤機票價格。",
+  });
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,7 +33,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/app", replace: true });
+      if (data.user) navigate("/app", { replace: true });
     });
   }, [navigate]);
 
@@ -54,7 +46,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    navigate({ to: "/app" });
+    navigate("/app");
   };
 
   const handleSignUp = async (e: FormEvent) => {
@@ -71,7 +63,7 @@ function AuthPage() {
       return;
     }
     toast.success("帳號已建立，歡迎加入！");
-    navigate({ to: "/app" });
+    navigate("/app");
   };
 
   return (
@@ -102,7 +94,12 @@ function AuthPage() {
           <CardDescription>登入或建立帳號，開始追蹤機票價格</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin">
+          <Tabs
+            value={tab}
+            onValueChange={(value) =>
+              navigate(value === "signup" ? "/sign-up" : "/sign-in", { replace: true })
+            }
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">登入</TabsTrigger>
               <TabsTrigger value="signup">註冊</TabsTrigger>

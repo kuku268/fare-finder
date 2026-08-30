@@ -1,16 +1,31 @@
-import { QueryClient } from "@tanstack/react-query";
-import { createRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
-export const getRouter = () => {
-  const queryClient = new QueryClient();
+import { AppDashboard } from "./routes/app";
+import { AuthPage } from "./routes/auth";
+import { RouteErrorBoundary } from "./routes/error-boundary";
+import { LandingPage } from "./routes/index";
+import { NotFoundPage } from "./routes/not-found";
+import { requireAuthLoader } from "./routes/require-auth";
+import { RootLayout } from "./routes/root-layout";
 
-  const router = createRouter({
-    routeTree,
-    context: { queryClient },
-    scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
-  });
-
-  return router;
-};
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <RouteErrorBoundary />,
+    children: [
+      { index: true, element: <LandingPage /> },
+      { path: "sign-in", element: <AuthPage tab="signin" /> },
+      { path: "sign-up", element: <AuthPage tab="signup" /> },
+      // Previous single combined route — kept so old links keep working.
+      { path: "auth", element: <Navigate to="/sign-in" replace /> },
+      {
+        path: "app",
+        loader: requireAuthLoader,
+        element: <AppDashboard />,
+        errorElement: <RouteErrorBoundary />,
+      },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
+]);

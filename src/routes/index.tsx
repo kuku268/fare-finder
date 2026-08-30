@@ -1,28 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plane, Bell, CalendarX2, ArrowRight, LayoutDashboard } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useReveal } from "@/hooks/use-reveal";
+import { Link } from "react-router-dom";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Flight Price Notifier — 機票降價通知" },
-      {
-        name: "description",
-        content:
-          "設定航線與目標價，機票降價就通知你。Set a route and a target price — we email you when the fare drops.",
-      },
-      { property: "og:title", content: "Flight Price Notifier — 機票降價通知" },
-      {
-        property: "og:description",
-        content:
-          "設定航線與目標價，機票降價就通知你。Set a route and a target price — we email you when the fare drops.",
-      },
-    ],
-  }),
-  component: LandingPage,
-});
+import { useReveal } from "@/hooks/use-reveal";
+import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/lib/use-page-meta";
 
 const features = [
   {
@@ -45,7 +27,15 @@ const features = [
   },
 ];
 
-function LandingPage() {
+export function LandingPage() {
+  usePageMeta({
+    title: "Flight Price Notifier — 機票降價通知",
+    description:
+      "設定航線與目標價，機票降價就通知你。Set a route and a target price — we email you when the fare drops.",
+    ogTitle: "Flight Price Notifier — 機票降價通知",
+    ogDescription:
+      "設定航線與目標價，機票降價就通知你。Set a route and a target price — we email you when the fare drops.",
+  });
   useReveal();
   const [signedIn, setSignedIn] = useState(false);
 
@@ -82,7 +72,7 @@ function LandingPage() {
             </Link>
           ) : (
             <Link
-              to="/auth"
+              to="/sign-in"
               className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-[0_0_24px_-4px_var(--color-glow)]"
             >
               Sign in / 登入
@@ -123,7 +113,7 @@ function LandingPage() {
           </p>
           <div className="reveal mt-10" style={{ animationDelay: "0.2s" }}>
             <Link
-              to="/auth"
+              to="/sign-in"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_32px_-4px_var(--color-glow)]"
             >
               開始追蹤票價
