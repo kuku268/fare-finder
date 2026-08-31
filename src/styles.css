@@ -5,13 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 1px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 6px);
-  --radius-3xl: calc(var(--radius) + 8px);
-  --radius-4xl: calc(var(--radius) + 10px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -33,21 +33,7 @@
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
   --color-glow: var(--glow);
-
-  /* Poster palette, exposed as utilities (bg-sea, text-terracotta, …) */
-  --color-paper: var(--paper);
-  --color-paper-deep: var(--paper-deep);
-  --color-ink: var(--ink);
-  --color-sky: var(--sky);
-  --color-sea: var(--sea);
-  --color-sea-deep: var(--sea-deep);
-  --color-sand: var(--sand);
-  --color-terracotta: var(--terracotta);
-  --color-terracotta-deep: var(--terracotta-deep);
-  --color-olive: var(--olive);
-
   --font-sans: var(--font-family-sans);
-  --font-display: var(--font-family-display);
 }
 
 @theme {
@@ -55,35 +41,28 @@
 }
 
 :root {
-  /* Poster geometry: mid-century travel prints are rectilinear. */
-  --radius: 0.125rem;
-
-  /* Jost is a geometric grotesque in the Futura lineage — the lettering
-     used on 1950s–60s travel posters. Inter carries the running text. */
-  --font-family-display: "Jost", "Futura", ui-sans-serif, system-ui,
-    "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --radius: 0.75rem;
   --font-family-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC",
     "Microsoft JhengHei", sans-serif;
 
   /* ── Riviera travel-poster palette ───────────────────────────────
-     paper       aged cream stock the poster is printed on
-     ink         deep blue-green, the darkest value in the print
-     sky / sea   the two blues that split the composition
-     sand        sunlit limestone and stucco
-     terracotta  roof tiles and the boat's hull stripe
-     olive       the foreground foliage                            */
+     Sampled from the Monte Carlo print: aged cream stock, a deep
+     blue-green ink, the sky/sea blue pair, sunlit limestone, and the
+     terracotta of the roof tiles and the boat's hull.
+     Only the colors changed here — layout, type scale and radii are
+     the original design's.                                          */
   --paper: #f4eee1;
   --paper-deep: #e9dfca;
   --ink: #23383e;
   --sky: #afcbd1;
   --sea: #3c7e88;
   --sea-deep: #2b5c66;
-  --sand: #e5d3b0;
+  --sand: #e8d9bb;
   --terracotta: #c0543c;
   --terracotta-deep: #a6412c;
-  --olive: #6b7c52;
 
+  /* Warm cream paper, deep blue-green ink */
   --background: var(--paper);
   --foreground: var(--ink);
   --card: #fbf7ee;
@@ -92,18 +71,20 @@
   --popover-foreground: var(--ink);
   --primary: var(--terracotta);
   --primary-foreground: #fbf7ee;
-  --secondary: var(--sand);
+  --secondary: var(--paper-deep);
   --secondary-foreground: var(--ink);
   --muted: var(--paper-deep);
   --muted-foreground: #5c7075;
-  --accent: var(--sea);
-  --accent-foreground: #fbf7ee;
+  --accent: var(--sand);
+  --accent-foreground: var(--ink);
   --destructive: var(--terracotta-deep);
   --destructive-foreground: #fbf7ee;
-  --border: color-mix(in srgb, var(--ink) 16%, transparent);
-  --input: color-mix(in srgb, var(--ink) 28%, transparent);
+  --border: color-mix(in srgb, var(--ink) 14%, transparent);
+  --input: color-mix(in srgb, var(--ink) 22%, transparent);
   --ring: var(--sea);
-  --glow: color-mix(in srgb, var(--ink) 18%, transparent);
+  /* Used for the soft radial washes behind the hero and the auth card —
+     on cream stock that reads as the poster's sky, not a neon glow. */
+  --glow: color-mix(in srgb, var(--sky) 65%, transparent);
 }
 
 @layer base {
@@ -120,13 +101,6 @@
     color: var(--color-foreground);
     font-family: var(--font-family-sans);
     -webkit-font-smoothing: antialiased;
-  }
-
-  /* Every heading takes the poster face. */
-  h1,
-  h2,
-  h3 {
-    font-family: var(--font-family-display);
   }
 }
 
@@ -155,59 +129,18 @@
   }
 }
 
-/* A printed panel: hairline rule, flat cream fill, one soft drop shadow —
-   the way a poster sits on a wall, not a glowing screen element. */
+/* Same geometry as before — hairline ring plus a soft drop shadow. On light
+   stock the shadow is inked rather than lit, or it disappears entirely. */
 @utility glow-card {
-  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
   box-shadow:
-    0 1px 0 0 color-mix(in srgb, var(--ink) 6%, transparent),
-    0 18px 32px -24px color-mix(in srgb, var(--ink) 55%, transparent);
+    0 0 0 1px var(--border),
+    0 12px 40px -12px color-mix(in srgb, var(--ink) 34%, transparent);
 }
 
-/* The poster's own frame: a hairline keyline and the shadow of a hung print.
-   The inner cream margin is drawn as real markup (see `poster-keyline`) so it
-   always paints above the artwork, whatever sits inside. */
-@utility poster-frame {
-  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
-  box-shadow: 0 24px 48px -32px color-mix(in srgb, var(--ink) 65%, transparent);
-}
-
-/* The thin rule printed inside the poster's cream margin. */
-@utility poster-keyline {
-  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
-}
-
-/* Wide letter-spaced display lettering, as set on the printed poster. */
-@utility poster-type {
-  font-family: var(--font-family-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-}
-
-@utility deco-rule {
-  border-top: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
-  height: 3px;
-}
-
-/* Screen-printed paper: a faint horizontal tooth, the way flat ink sits on
-   uncoated stock. Cheap enough to leave on the whole page. */
-@utility paper-grain {
-  background-image: repeating-linear-gradient(
-      0deg,
-      color-mix(in srgb, var(--ink) 3%, transparent) 0px,
-      color-mix(in srgb, var(--ink) 3%, transparent) 1px,
-      transparent 1px,
-      transparent 3px
-    ),
-    radial-gradient(
-      120% 80% at 50% 0%,
-      color-mix(in srgb, var(--sand) 55%, transparent) 0%,
-      transparent 65%
-    );
-}
-
+/* The poster's two accent inks, sea into terracotta. */
 @utility gradient-text {
-  color: var(--terracotta);
+  background: linear-gradient(120deg, var(--sea), var(--terracotta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

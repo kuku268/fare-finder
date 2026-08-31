@@ -27,23 +27,18 @@ export function AppDashboard() {
   };
 
   return (
-    <div className="paper-grain flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 border-b border-ink/25 bg-paper/90 backdrop-blur-md">
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="flex size-8 items-center justify-center bg-sea text-paper">
+          <div className="flex items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Plane className="size-4" />
             </span>
-            <span className="poster-type text-[0.7rem] text-ink sm:text-xs">
+            <span className="text-sm font-semibold tracking-tight text-foreground sm:text-base">
               Flight Price Notifier
             </span>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="font-display uppercase tracking-[0.18em]"
-            onClick={handleSignOut}
-          >
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
             <LogOut />
             Sign Out
           </Button>
@@ -51,15 +46,13 @@ export function AppDashboard() {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-12 sm:px-6">
-        <p className="poster-type text-[0.65rem] text-terracotta">Dashboard</p>
-        <h1 className="mt-3 font-display text-3xl font-light tracking-[0.08em] text-ink sm:text-4xl">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           Hi {user.email}
         </h1>
-        <div aria-hidden className="deco-rule mt-6 w-20" />
 
-        <Card className="glow-card mt-10 max-w-2xl animate-fade-up bg-card">
+        <Card className="glow-card mt-8 max-w-2xl animate-fade-up">
           <CardContent className="flex flex-col items-start gap-4 p-8">
-            <span className="inline-flex size-11 items-center justify-center bg-sea text-paper">
+            <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
               <Bell className="size-5" />
             </span>
             <p className="text-base leading-relaxed text-card-foreground">

@@ -19,25 +19,24 @@ export function RouteErrorBoundary() {
   if (isNotFound) return <NotFoundPage />;
 
   return (
-    <div className="paper-grain flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-xl font-normal uppercase tracking-[0.2em] text-ink">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
         </h1>
-        <div aria-hidden className="deco-rule mx-auto mt-5 w-14" />
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => revalidator.revalidate()}
-            className="inline-flex items-center justify-center bg-terracotta px-6 py-2.5 font-display text-xs font-medium uppercase tracking-[0.2em] text-paper transition-colors hover:bg-terracotta-deep"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center border border-ink/30 bg-transparent px-6 py-2.5 font-display text-xs font-medium uppercase tracking-[0.2em] text-ink transition-colors hover:bg-paper-deep"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
           </a>
