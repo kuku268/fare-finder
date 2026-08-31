@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Plane, LogOut, Bell } from "lucide-react";
+import { Plane, LogOut } from "lucide-react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
+import { SubscribePlans } from "@/components/subscribe-plans";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/lib/use-page-meta";
 
@@ -50,20 +50,7 @@ export function AppDashboard() {
           Hi {user.email}
         </h1>
 
-        <Card className="glow-card mt-8 max-w-2xl animate-fade-up">
-          <CardContent className="flex flex-col items-start gap-4 p-8">
-            <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-              <Bell className="size-5" />
-            </span>
-            <p className="text-base leading-relaxed text-card-foreground">
-              你的航線追蹤儀表板即將上線——下一個里程碑會加上訂閱航線的功能。
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Your dashboard is coming soon. Route-subscription will be added in
-              the next milestone.
-            </p>
-          </CardContent>
-        </Card>
+        <SubscribePlans email={user.email ?? ""} />
       </main>
     </div>
   );
