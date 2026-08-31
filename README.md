@@ -18,7 +18,7 @@ Card 3:「隨時取消(Cancel anytime)」 -- 月訂閱制，不想用隨時停�
 
 Footer with copyright「© 2026 Flight Price Notifier」
 
-Authentication using Lovable's built-in Supabase-style auth (use whatever auth backend Lovable provides by default -- Lovable Cloud is fine for this v1; we'll swap to a user-owned Supabase project in a later step):
+Authentication backed by the project's own Supabase project (`flight-price-notifier-001`, ref `yjjmfaulcniwqfhnweiy`). Lovable Cloud is no longer used as the backend:
 
 Sign up page with email + password
 
@@ -92,8 +92,19 @@ npm run dev       # http://localhost:8080
 
 Other scripts: `npm run typecheck`, `npm run lint`, `npm run build`, `npm run preview`.
 
-Environment variables (see `.env`): `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
-are inlined at build time, so they must be present in the Vercel project as well.
+### Environment variables
+
+See `.env` (committed) and `.env.example`:
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_SUPABASE_URL` | Supabase project API URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Browser-safe, RLS-gated key (`sb_publishable_*`); replaces the older "anon key" |
+| `VITE_SUPABASE_PROJECT_ID` | Supabase project ref, for reference/tooling |
+
+Vite inlines these at build time, so they must also be set in the Vercel project.
+The Supabase client (`src/integrations/supabase/client.ts`) is the single place the
+client is created and reads these vars only — no hardcoded URLs or keys anywhere.
 
 ## Deploying to Vercel
 
