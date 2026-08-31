@@ -44,7 +44,7 @@ function statusOf(sub: Subscription | undefined): SubscriptionStatus | null {
   return sub.subscription_status ?? "pending_payment";
 }
 
-function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: string }) {
+function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: string | undefined }) {
   if (status === "active") {
     return (
       <Badge variant="secondary" className="shrink-0 gap-1">
