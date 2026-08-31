@@ -12,7 +12,7 @@ export const FLIGHT_API_URL = (
   (import.meta.env['VITE_FLIGHT_API_URL'] as string | undefined) ?? FALLBACK_API_URL
 ).replace(/\/$/, "");
 
-export type PlanName = "tokyo" | "seoul";
+export type PlanName = "tokyo" | "seoul" | "london";
 
 export type Subscription = {
   email: string;

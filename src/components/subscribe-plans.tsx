@@ -23,15 +23,16 @@ type Plan = {
 };
 
 const PLANS: Plan[] = [
-  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 9325 },
-  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 5989 },
+  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 7164 },
+  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4303 },
+  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 24473 },
 ];
 
 const twd = new Intl.NumberFormat("zh-TW");
 
 export function SubscribePlans({ email }: { email: string }) {
   const [subs, setSubs] = useState<Subscription[] | null>(null);
-  const [drafts, setDrafts] = useState<Record<PlanName, string>>({ tokyo: "", seoul: "" });
+  const [drafts, setDrafts] = useState<Record<PlanName, string>>({ tokyo: "", seoul: "", london: "" });
   const [saving, setSaving] = useState<PlanName | null>(null);
 
   const byPlan = useMemo(() => {
@@ -96,7 +97,7 @@ export function SubscribePlans({ email }: { email: string }) {
         設定目標價，價格低於目標時我們會寄信通知你（每 30 分鐘檢查一次）。
       </p>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
           const busy = saving === plan.name;
