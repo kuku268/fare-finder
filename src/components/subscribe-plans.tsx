@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Plane } from "lucide-react";
+import { Check, Clock, CreditCard, Loader2, Plane, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  cancelSubscription,
   listSubscriptions,
   saveSubscription,
   type PlanName,
   type Subscription,
+  type SubscriptionStatus,
 } from "@/lib/flight-api";
 
 type Plan = {
@@ -23,17 +25,65 @@ type Plan = {
 };
 
 const PLANS: Plan[] = [
-  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 7164 },
+  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6658 },
   { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4303 },
-  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 24473 },
+  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 18900 },
 ];
 
+const MONTHLY_TWD = 300;
+
 const twd = new Intl.NumberFormat("zh-TW");
+
+/**
+ * Legacy M1 rows have no `subscription_status`. They predate the paywall and
+ * are no longer alerted, so surface them the same as an unpaid signup — the
+ * user self-migrates by paying rather than having their row deleted.
+ */
+function statusOf(sub: Subscription | undefined): SubscriptionStatus | null {
+  if (!sub) return null;
+  return sub.subscription_status ?? "pending_payment";
+}
+
+function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: string }) {
+  if (status === "active") {
+    return (
+      <Badge variant="secondary" className="shrink-0 gap-1">
+        <Check className="size-3" />
+        已訂閱
+      </Badge>
+    );
+  }
+  if (status === "pending_payment") {
+    return (
+      <Badge
+        variant="outline"
+        className="shrink-0 gap-1 border-amber-500/50 text-amber-600 dark:text-amber-400"
+      >
+        <Clock className="size-3" />
+        未完成付款
+      </Badge>
+    );
+  }
+  if (status === "cancelled") {
+    return (
+      <Badge variant="outline" className="shrink-0 gap-1">
+        <XCircle className="size-3" />
+        已取消{until ? `・有效至 ${until}` : ""}
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="shrink-0 gap-1 text-muted-foreground">
+      已結束
+    </Badge>
+  );
+}
 
 export function SubscribePlans({ email }: { email: string }) {
   const [subs, setSubs] = useState<Subscription[] | null>(null);
   const [drafts, setDrafts] = useState<Record<PlanName, string>>({ tokyo: "", seoul: "", london: "" });
   const [saving, setSaving] = useState<PlanName | null>(null);
+  const [cancelling, setCancelling] = useState<PlanName | null>(null);
 
   const byPlan = useMemo(() => {
     const map = {} as Partial<Record<PlanName, Subscription>>;
@@ -41,17 +91,21 @@ export function SubscribePlans({ email }: { email: string }) {
     return map;
   }, [subs]);
 
+  const applyItems = (items: Subscription[]) => {
+    setSubs(items);
+    setDrafts((d) => {
+      const next = { ...d };
+      for (const item of items) next[item.plan_name] = String(item.target_price);
+      return next;
+    });
+  };
+
   useEffect(() => {
     let cancelled = false;
     listSubscriptions(email)
       .then((items) => {
         if (cancelled) return;
-        setSubs(items);
-        setDrafts((d) => {
-          const next = { ...d };
-          for (const item of items) next[item.plan_name] = String(item.target_price);
-          return next;
-        });
+        applyItems(items);
       })
       .catch((err: unknown) => {
         if (cancelled) return;
@@ -63,6 +117,18 @@ export function SubscribePlans({ email }: { email: string }) {
     };
   }, [email]);
 
+  // ECPay returns the browser here (via the redirect Lambda) after checkout.
+  useEffect(() => {
+    const purchase = new URLSearchParams(window.location.search).get("purchase");
+    if (!purchase) return;
+    if (purchase === "success") {
+      toast.success("付款完成！", { description: "訂閱已啟用，達標時就會寄信通知你。" });
+    } else {
+      toast.error("付款未完成", { description: "沒有扣款。可以再按一次「完成付款」重試。" });
+    }
+    window.history.replaceState({}, "", window.location.pathname);
+  }, []);
+
   const handleSubmit = async (plan: Plan) => {
     const target = Number(drafts[plan.name]);
     if (!Number.isFinite(target) || target <= 0) {
@@ -71,16 +137,18 @@ export function SubscribePlans({ email }: { email: string }) {
     }
     setSaving(plan.name);
     try {
+      // Returns null when it has handed the browser to ECPay's cashier.
       const saved = await saveSubscription({
         email,
         plan_name: plan.name,
         target_price: Math.round(target),
       });
+      if (!saved) return;
       setSubs((prev) => [
         ...(prev ?? []).filter((s) => s.plan_name !== plan.name),
         { ...saved, plan_name: plan.name },
       ]);
-      toast.success(`已開始追蹤 ${plan.label}`, {
+      toast.success(`已更新 ${plan.label}`, {
         description: `低於 NT$${twd.format(Math.round(target))} 就寄信通知你。`,
       });
     } catch (err) {
@@ -90,17 +158,47 @@ export function SubscribePlans({ email }: { email: string }) {
     }
   };
 
+  const handleCancel = async (plan: Plan) => {
+    setCancelling(plan.name);
+    try {
+      const res = await cancelSubscription(email, plan.route);
+      const items = await listSubscriptions(email);
+      applyItems(items);
+      toast.success(`已取消 ${plan.label}`, {
+        description: res.current_period_end_date
+          ? `有效至 ${res.current_period_end_date}，在那之前仍會收到通知。`
+          : "之後不會再自動扣款。",
+      });
+    } catch (err) {
+      toast.error("取消失敗", { description: String(err) });
+    } finally {
+      setCancelling(null);
+    }
+  };
+
   return (
     <section className="mt-8">
       <h2 className="text-lg font-semibold tracking-tight text-foreground">追蹤航線</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        設定目標價，價格低於目標時我們會寄信通知你（每 30 分鐘檢查一次）。
+        月訂閱 NT${twd.format(MONTHLY_TWD)}，設定目標價後每 30 分鐘檢查一次，低於目標就寄信通知你。隨時可取消。
       </p>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
+          const status = statusOf(sub);
           const busy = saving === plan.name;
+          const busyCancel = cancelling === plan.name;
+          const paid = status === "active" || status === "cancelled";
+
+          const cta = paid
+            ? "更新目標價"
+            : status === "pending_payment"
+              ? "完成付款"
+              : status === "expired"
+                ? "重新訂閱"
+                : "開始追蹤";
+
           return (
             <Card key={plan.name} className="glow-card animate-fade-up">
               <CardContent className="flex flex-col gap-4 p-6">
@@ -114,23 +212,29 @@ export function SubscribePlans({ email }: { email: string }) {
                       <p className="text-xs text-muted-foreground">{plan.route}</p>
                     </div>
                   </div>
-                  {sub ? (
-                    <Badge variant="secondary" className="shrink-0 gap-1">
-                      <Check className="size-3" />
-                      已訂閱
-                    </Badge>
-                  ) : null}
+                  {status ? <StatusBadge status={status} until={sub?.current_period_end_date} /> : null}
                 </div>
 
                 {sub ? (
                   <p className="text-sm text-muted-foreground">
-                    目前目標價 <span className="font-medium text-foreground">NT${twd.format(sub.target_price)}</span>
+                    目前目標價{" "}
+                    <span className="font-medium text-foreground">NT${twd.format(sub.target_price)}</span>
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    目前最低約 NT${twd.format(plan.hint)}
-                  </p>
+                  <p className="text-sm text-muted-foreground">目前最低約 NT${twd.format(plan.hint)}</p>
                 )}
+
+                {status === "pending_payment" ? (
+                  <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+                    尚未完成付款，目前不會收到通知。按「完成付款」前往綠界，月費 NT${twd.format(MONTHLY_TWD)}。
+                  </p>
+                ) : null}
+
+                {status === "cancelled" && sub?.current_period_end_date ? (
+                  <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+                    已停止自動續扣，但你已付費至 {sub.current_period_end_date}，在那之前仍會照常收到通知。
+                  </p>
+                ) : null}
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor={`target-${plan.name}`} className="text-xs text-muted-foreground">
@@ -149,12 +253,26 @@ export function SubscribePlans({ email }: { email: string }) {
 
                 <Button
                   className="w-full"
-                  disabled={busy || subs === null}
+                  disabled={busy || busyCancel || subs === null}
                   onClick={() => void handleSubmit(plan)}
                 >
                   {busy ? <Loader2 className="animate-spin" /> : null}
-                  {sub ? "更新目標價" : "開始追蹤"}
+                  {!paid ? <CreditCard className="size-4" /> : null}
+                  {cta}
                 </Button>
+
+                {paid ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-muted-foreground"
+                    disabled={busy || busyCancel || status === "cancelled"}
+                    onClick={() => void handleCancel(plan)}
+                  >
+                    {busyCancel ? <Loader2 className="animate-spin" /> : null}
+                    {status === "cancelled" ? "已取消" : "取消訂閱"}
+                  </Button>
+                ) : null}
               </CardContent>
             </Card>
           );
