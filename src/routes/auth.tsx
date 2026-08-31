@@ -67,31 +67,37 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
+    <div className="paper-grain relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
+      {/* A band of poster sky behind the panel */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-x-0 top-0 h-64"
         style={{
           background:
-            "radial-gradient(50% 40% at 50% 0%, var(--color-glow) 0%, transparent 70%)",
+            "linear-gradient(180deg, color-mix(in srgb, var(--sky) 70%, transparent) 0%, transparent 100%)",
         }}
       />
       <Link
         to="/"
-        className="relative mb-8 flex items-center gap-2 text-foreground transition-opacity hover:opacity-80"
+        className="relative mb-10 flex items-center gap-3 text-foreground transition-opacity hover:opacity-80"
       >
-        <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <span className="flex size-9 items-center justify-center bg-sea text-paper">
           <Plane className="size-4" />
         </span>
-        <span className="text-lg font-semibold tracking-tight">
+        <span className="poster-type text-xs sm:text-sm">
           Flight Price Notifier
         </span>
       </Link>
 
-      <Card className="relative w-full max-w-md glow-card">
+      <Card className="poster-frame relative w-full max-w-md bg-card">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">歡迎</CardTitle>
-          <CardDescription>登入或建立帳號，開始追蹤機票價格</CardDescription>
+          <CardTitle className="font-display text-2xl font-light uppercase tracking-[0.2em]">
+            歡迎
+          </CardTitle>
+          <div aria-hidden className="deco-rule mx-auto mt-3 w-12" />
+          <CardDescription className="pt-2">
+            登入或建立帳號，開始追蹤機票價格
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs
@@ -100,9 +106,19 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
               navigate(value === "signup" ? "/sign-up" : "/sign-in", { replace: true })
             }
           >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">登入</TabsTrigger>
-              <TabsTrigger value="signup">註冊</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-paper-deep">
+              <TabsTrigger
+                value="signin"
+                className="font-display uppercase tracking-[0.18em]"
+              >
+                登入
+              </TabsTrigger>
+              <TabsTrigger
+                value="signup"
+                className="font-display uppercase tracking-[0.18em]"
+              >
+                註冊
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin">
@@ -131,7 +147,11 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full font-display uppercase tracking-[0.2em]"
+                  disabled={loading}
+                >
                   {loading && <Loader2 className="animate-spin" />}
                   登入
                 </Button>
@@ -165,7 +185,11 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full font-display uppercase tracking-[0.2em]"
+                  disabled={loading}
+                >
                   {loading && <Loader2 className="animate-spin" />}
                   建立帳號
                 </Button>
