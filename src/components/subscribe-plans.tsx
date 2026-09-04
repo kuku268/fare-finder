@@ -183,6 +183,25 @@ export function SubscribePlans({ email }: { email: string }) {
         月訂閱 NT${twd.format(MONTHLY_TWD)}，設定目標價後每 30 分鐘檢查一次，低於目標就寄信通知你。隨時可取消。
       </p>
 
+      <div className="mt-4 rounded-lg border border-border/60 bg-muted/40 p-4 text-xs leading-relaxed text-muted-foreground">
+        <p className="font-medium text-foreground">訂閱前請先了解</p>
+        <ul className="mt-2 space-y-2">
+          <li>
+            本服務<strong className="font-medium text-foreground">只提供票價比較與通知，不販售、也不代訂機票</strong>。
+            通知信中的連結會把你導向第三方機票搜尋平台，實際售票者是其上架的各家訂票平台。
+          </li>
+          <li>
+            <strong className="font-medium text-foreground">我們不審核、也不背書這些訂票平台</strong>
+            的營運狀況、退改票政策、客服品質或交易安全。下單前請自行確認賣方的可靠性與退改規則；
+            與訂票平台之間的交易爭議，請直接向該平台或發卡機構處理。
+          </li>
+          <li>
+            請注意，<strong className="font-medium text-foreground">有些票價不含託運行李與其他附加費用</strong>，
+            請自行審酌。實際應付金額以訂票頁面為準。
+          </li>
+        </ul>
+      </div>
+
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
