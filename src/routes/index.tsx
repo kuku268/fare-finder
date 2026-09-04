@@ -62,6 +62,13 @@ export function LandingPage() {
               Flight Price Notifier
             </span>
           </Link>
+          <div className="flex items-center gap-2">
+          <Link
+            to="/contact"
+            className="hidden items-center justify-center rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent sm:inline-flex"
+          >
+            Contact Sale / 聯絡業務
+          </Link>
           {signedIn ? (
             <Link
               to="/app"
@@ -78,6 +85,7 @@ export function LandingPage() {
               Sign in / 登入
             </Link>
           )}
+          </div>
         </div>
       </header>
 
