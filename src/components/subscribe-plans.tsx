@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Clock, CreditCard, Loader2, Plane, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -200,6 +201,13 @@ export function SubscribePlans({ email }: { email: string }) {
             請自行審酌。實際應付金額以訂票頁面為準。
           </li>
         </ul>
+        <p className="mt-3">
+          完整內容請見{" "}
+          <Link to="/terms" className="text-primary underline underline-offset-4">
+            服務條款與退款政策
+          </Link>
+          。
+        </p>
       </div>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

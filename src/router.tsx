@@ -7,6 +7,7 @@ import { LandingPage } from "./routes/index";
 import { NotFoundPage } from "./routes/not-found";
 import { requireAuthLoader } from "./routes/require-auth";
 import { RootLayout } from "./routes/root-layout";
+import { TermsPage } from "./routes/terms";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <LandingPage /> },
+      { path: "terms", element: <TermsPage /> },
       { path: "sign-in", element: <AuthPage tab="signin" /> },
       { path: "sign-up", element: <AuthPage tab="signup" /> },
       // Previous single combined route — kept so old links keep working.

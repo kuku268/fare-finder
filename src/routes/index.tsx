@@ -164,6 +164,12 @@ export function LandingPage() {
             <Plane className="size-4 text-primary" />
             Flight Price Notifier
           </div>
+          <Link
+            to="/terms"
+            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            服務條款與退款政策
+          </Link>
           <p className="text-xs text-muted-foreground/70">
             © 2026 Flight Price Notifier
           </p>
