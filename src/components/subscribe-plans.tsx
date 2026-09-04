@@ -25,9 +25,9 @@ type Plan = {
 };
 
 const PLANS: Plan[] = [
-  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6658 },
-  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4303 },
-  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 18900 },
+  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6410 },
+  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4701 },
+  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 20388 },
 ];
 
 const MONTHLY_TWD = 300;
