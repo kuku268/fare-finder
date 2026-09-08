@@ -209,9 +209,10 @@ export function SubscribePlans({ email }: { email: string }) {
           </li>
           <li>
             請注意，<strong className="font-medium text-foreground">有些票價不含託運行李與其他附加費用</strong>，
-            請自行審酌。實際應付金額以訂票頁面為準。
+            請自行去訂票頁勾選比較。
           </li>
         </ul>
+        <p className="mt-3">實際應付金額以訂票頁面為準。</p>
         <p className="mt-3">
           完整內容請見{" "}
           <Link to="/terms" className="text-primary underline underline-offset-4">
@@ -278,7 +279,7 @@ export function SubscribePlans({ email }: { email: string }) {
 
                 {status === "cancelled" && sub?.current_period_end_date ? (
                   <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-                    已停止自動續扣，但你已付費至 {sub.current_period_end_date}，在那之前仍會照常收到通知。
+                    已停止自動續扣，在 {sub.current_period_end_date} 之前仍會照常收到通知。
                   </p>
                 ) : null}
 

@@ -161,7 +161,7 @@ export function TermsPage() {
               </li>
               <li>
                 顯示的票價<strong className="text-foreground">有些不含託運行李與其他附加費用</strong>，
-                請自行審酌；實際應付金額以訂票頁面為準
+                請自行去訂票頁勾選比較；實際應付金額以訂票頁面為準
               </li>
               <li>
                 本服務<strong className="text-foreground">不審核、也不背書</strong>
