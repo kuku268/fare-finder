@@ -209,10 +209,9 @@ export function SubscribePlans({ email }: { email: string }) {
           </li>
           <li>
             請注意，<strong className="font-medium text-foreground">有些票價不含託運行李與其他附加費用</strong>，
-            請自行去訂票頁勾選比較。
+            請自行去訂票頁勾選比較。實際應付金額以訂票頁面為準。
           </li>
         </ul>
-        <p className="mt-3">實際應付金額以訂票頁面為準。</p>
         <p className="mt-3">
           完整內容請見{" "}
           <Link to="/terms" className="text-primary underline underline-offset-4">
@@ -222,9 +221,9 @@ export function SubscribePlans({ email }: { email: string }) {
         </p>
       </div>
 
-      {/* 4-up only from xl. At lg a fourth column squeezed each card under ~230px,
-          which broke the route name mid-word (台北 ✈ 東 / 京). */}
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      {/* 4-up from lg. Safe now that the route name has its own full-width row —
+          it was the badge sharing that row that used to break it mid-word. */}
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
           const status = statusOf(sub);
