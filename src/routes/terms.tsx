@@ -10,6 +10,7 @@ const ROUTES = [
   { label: "台北 ✈ 東京", code: "TPE-TYO" },
   { label: "台北 ✈ 首爾", code: "TPE-SEL" },
   { label: "台北 ✈ 倫敦", code: "TPE-LON" },
+  { label: "台北 ✈ 曼谷", code: "TPE-BKK" },
 ];
 
 function Section({

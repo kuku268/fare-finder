@@ -29,6 +29,7 @@ const PLANS: Plan[] = [
   { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6410 },
   { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4701 },
   { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 20388 },
+  { name: "bangkok", label: "台北 ✈ 曼谷", route: "TPE-BKK", hint: 6398 },
 ];
 
 const MONTHLY_TWD = 300;
@@ -82,7 +83,12 @@ function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: st
 
 export function SubscribePlans({ email }: { email: string }) {
   const [subs, setSubs] = useState<Subscription[] | null>(null);
-  const [drafts, setDrafts] = useState<Record<PlanName, string>>({ tokyo: "", seoul: "", london: "" });
+  const [drafts, setDrafts] = useState<Record<PlanName, string>>({
+    tokyo: "",
+    seoul: "",
+    london: "",
+    bangkok: "",
+  });
   const [saving, setSaving] = useState<PlanName | null>(null);
   const [cancelling, setCancelling] = useState<PlanName | null>(null);
 
@@ -210,7 +216,7 @@ export function SubscribePlans({ email }: { email: string }) {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
           const status = statusOf(sub);
