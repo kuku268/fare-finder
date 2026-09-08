@@ -46,10 +46,15 @@ function statusOf(sub: Subscription | undefined): SubscriptionStatus | null {
   return sub.subscription_status ?? "pending_payment";
 }
 
-function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: string | undefined }) {
+/**
+ * Status pill. Deliberately terse — the paid-through date is spelled out in the
+ * note below the price, so repeating it here only made the badge overflow the
+ * card on narrow columns.
+ */
+function StatusBadge({ status }: { status: SubscriptionStatus }) {
   if (status === "active") {
     return (
-      <Badge variant="secondary" className="shrink-0 gap-1">
+      <Badge variant="secondary" className="shrink-0 gap-1 whitespace-nowrap">
         <Check className="size-3" />
         已訂閱
       </Badge>
@@ -59,7 +64,7 @@ function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: st
     return (
       <Badge
         variant="outline"
-        className="shrink-0 gap-1 border-amber-500/50 text-amber-600 dark:text-amber-400"
+        className="shrink-0 gap-1 whitespace-nowrap border-amber-500/50 text-amber-600 dark:text-amber-400"
       >
         <Clock className="size-3" />
         未完成付款
@@ -68,14 +73,14 @@ function StatusBadge({ status, until }: { status: SubscriptionStatus; until?: st
   }
   if (status === "cancelled") {
     return (
-      <Badge variant="outline" className="shrink-0 gap-1">
+      <Badge variant="outline" className="shrink-0 gap-1 whitespace-nowrap">
         <XCircle className="size-3" />
-        已取消{until ? `・有效至 ${until}` : ""}
+        已取消
       </Badge>
     );
   }
   return (
-    <Badge variant="outline" className="shrink-0 gap-1 text-muted-foreground">
+    <Badge variant="outline" className="shrink-0 gap-1 whitespace-nowrap text-muted-foreground">
       已結束
     </Badge>
   );
@@ -216,7 +221,9 @@ export function SubscribePlans({ email }: { email: string }) {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {/* 4-up only from xl. At lg a fourth column squeezed each card under ~230px,
+          which broke the route name mid-word (台北 ✈ 東 / 京). */}
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {PLANS.map((plan) => {
           const sub = byPlan[plan.name];
           const status = statusOf(sub);
@@ -232,30 +239,36 @@ export function SubscribePlans({ email }: { email: string }) {
                 ? "重新訂閱"
                 : "開始追蹤";
 
+          // h-full + mt-auto on the input block keeps every card's target field
+          // and CTA on the same line, however long the status note above is.
           return (
-            <Card key={plan.name} className="glow-card animate-fade-up">
-              <CardContent className="flex flex-col gap-4 p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+            <Card key={plan.name} className="glow-card animate-fade-up h-full">
+              <CardContent className="flex h-full flex-col gap-4 p-5">
+                {/* Icon and badge share the top row; the route name gets the full
+                    card width below them, so it never wraps against the badge. */}
+                <div className="flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                       <Plane className="size-4" />
                     </span>
-                    <div>
-                      <p className="text-base font-semibold text-card-foreground">{plan.label}</p>
-                      <p className="text-xs text-muted-foreground">{plan.route}</p>
-                    </div>
+                    {status ? <StatusBadge status={status} /> : null}
                   </div>
-                  {status ? <StatusBadge status={status} until={sub?.current_period_end_date} /> : null}
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-semibold text-card-foreground">
+                      {plan.label}
+                    </p>
+                    <p className="text-xs tracking-wide text-muted-foreground">{plan.route}</p>
+                  </div>
                 </div>
 
-                {sub ? (
+                {/* The saved target moved next to the input's label (below) — as its
+                    own row it just repeated the number already in the input. */}
+                {!sub ? (
                   <p className="text-sm text-muted-foreground">
-                    目前目標價{" "}
-                    <span className="font-medium text-foreground">NT${twd.format(sub.target_price)}</span>
+                    目前最低約{" "}
+                    <span className="font-medium text-foreground">NT${twd.format(plan.hint)}</span>
                   </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">目前最低約 NT${twd.format(plan.hint)}</p>
-                )}
+                ) : null}
 
                 {status === "pending_payment" ? (
                   <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
@@ -269,10 +282,20 @@ export function SubscribePlans({ email }: { email: string }) {
                   </p>
                 ) : null}
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor={`target-${plan.name}`} className="text-xs text-muted-foreground">
-                    目標價（NT$）
-                  </Label>
+                <div className="mt-auto flex flex-col gap-2">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <Label htmlFor={`target-${plan.name}`} className="text-xs text-muted-foreground">
+                      目標價（NT$）
+                    </Label>
+                    {sub ? (
+                      <span className="whitespace-nowrap text-xs text-muted-foreground">
+                        目前{" "}
+                        <span className="font-medium text-foreground">
+                          NT${twd.format(sub.target_price)}
+                        </span>
+                      </span>
+                    ) : null}
+                  </div>
                   <Input
                     id={`target-${plan.name}`}
                     inputMode="numeric"
@@ -284,28 +307,30 @@ export function SubscribePlans({ email }: { email: string }) {
                   />
                 </div>
 
-                <Button
-                  className="w-full"
-                  disabled={busy || busyCancel || subs === null}
-                  onClick={() => void handleSubmit(plan)}
-                >
-                  {busy ? <Loader2 className="animate-spin" /> : null}
-                  {!paid ? <CreditCard className="size-4" /> : null}
-                  {cta}
-                </Button>
-
-                {paid ? (
+                <div className="flex flex-col gap-1.5">
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-muted-foreground"
-                    disabled={busy || busyCancel || status === "cancelled"}
-                    onClick={() => void handleCancel(plan)}
+                    className="w-full"
+                    disabled={busy || busyCancel || subs === null}
+                    onClick={() => void handleSubmit(plan)}
                   >
-                    {busyCancel ? <Loader2 className="animate-spin" /> : null}
-                    {status === "cancelled" ? "已取消" : "取消訂閱"}
+                    {busy ? <Loader2 className="animate-spin" /> : null}
+                    {!paid ? <CreditCard className="size-4" /> : null}
+                    {cta}
                   </Button>
-                ) : null}
+
+                  {paid ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-muted-foreground"
+                      disabled={busy || busyCancel || status === "cancelled"}
+                      onClick={() => void handleCancel(plan)}
+                    >
+                      {busyCancel ? <Loader2 className="animate-spin" /> : null}
+                      {status === "cancelled" ? "已取消" : "取消訂閱"}
+                    </Button>
+                  ) : null}
+                </div>
               </CardContent>
             </Card>
           );
