@@ -32,7 +32,7 @@ const PLANS: Plan[] = [
   { name: "bangkok", label: "台北 ✈ 曼谷", route: "TPE-BKK", hint: 6398 },
 ];
 
-const MONTHLY_TWD = 300;
+const MONTHLY_TWD = 200;
 
 const twd = new Intl.NumberFormat("zh-TW");
 

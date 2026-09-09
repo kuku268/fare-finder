@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { usePageMeta } from "@/lib/use-page-meta";
 
-const MONTHLY_TWD = 300;
+const MONTHLY_TWD = 200;
 
 const ROUTES = [
   { label: "台北 ✈ 東京", code: "TPE-TYO" },
