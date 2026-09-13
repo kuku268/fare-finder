@@ -105,26 +105,7 @@ export function TermsPage() {
             </ul>
           </Section>
 
-          <Section id="eligibility" title="二、訂閱資格與帳號">
-            <ul className="ml-5 list-disc space-y-1">
-              <li>
-                限<strong className="text-foreground">年滿 18 歲</strong>之個人。未滿 18 歲須經法定代理人同意；
-                未經同意而訂閱者，法定代理人得通知我們撤銷，我們查證後停止扣款，
-                並按比例退還尚未提供服務之費用
-              </li>
-              <li>
-                請確保註冊的 Email 正確且可正常收信。本服務所有通知（含扣款與條款變更）均寄至該 Email，
-                寄出即視為已通知
-              </li>
-              <li>帳號不得轉讓、出借或與他人共用</li>
-              <li>
-                Email 是系統辨識你身分的依據，<strong className="text-foreground">目前無法變更</strong>；
-                如需更換，請取消原訂閱後以新 Email 重新訂閱
-              </li>
-            </ul>
-          </Section>
-
-          <Section id="pricing" title="三、費用、訂閱週期與契約成立">
+          <Section id="pricing" title="二、費用、訂閱週期與契約成立">
             <ul className="ml-5 list-disc space-y-1">
               <li>
                 費用：<strong className="text-foreground">新台幣 {MONTHLY_TWD} 元／月（含稅）</strong>，
@@ -143,11 +124,11 @@ export function TermsPage() {
               <strong className="text-foreground">費用調整</strong>：調價於生效日 30 日前以 Email 通知，
               且<strong className="text-foreground">僅適用調價後新成立之訂閱</strong>——
               既有訂閱的每期金額在建立定期定額委託時即已固定，除非你取消後重新訂閱。
-              不同意調價，可於生效日前依第四節取消。
+              不同意調價，可於生效日前依第三節取消。
             </p>
           </Section>
 
-          <Section id="cancel" title="四、取消續訂方式">
+          <Section id="cancel" title="三、取消續訂方式">
             <p>你可隨時自行取消，沒有綁約、沒有最低訂閱期間。</p>
             <ol className="ml-5 list-decimal space-y-1">
               <li>登入後進入儀表板的「追蹤航線」</li>
@@ -161,7 +142,7 @@ export function TermsPage() {
             </p>
           </Section>
 
-          <Section id="refund" title="五、退款政策">
+          <Section id="refund" title="四、退款政策">
             <p>
               <strong className="text-foreground">關於七日猶豫期</strong>：
               本服務屬《通訊交易解除權合理例外情事適用準則》第 2 條第 5 款所定
@@ -187,24 +168,7 @@ export function TermsPage() {
             </p>
           </Section>
 
-          <Section id="acceptable-use" title="六、使用限制">
-            <p>使用本服務時，你同意不從事下列行為：</p>
-            <ul className="ml-5 list-disc space-y-1">
-              <li>以爬蟲、機器人或腳本等自動化方式大量存取本服務或通知內容</li>
-              <li>
-                <strong className="text-foreground">轉售、散布、公開張貼通知內容</strong>，
-                或以任何方式提供予未訂閱之第三人
-              </li>
-              <li>以多重帳號、偽造資訊或其他方式規避付費機制</li>
-              <li>干擾、破壞本服務之系統，或未經授權存取其資料</li>
-            </ul>
-            <p>
-              票價資料取自第三方並受其授權條款拘束，上述限制亦為遵循該等條款所必要。
-              違反者，我們得不經預告暫停或終止你的訂閱；情節重大者，當期費用不予退還。
-            </p>
-          </Section>
-
-          <Section id="limits" title="七、服務限制、免責與責任上限">
+          <Section id="limits" title="五、服務限制、免責與責任上限">
             <ul className="ml-5 list-disc space-y-1">
               <li>
                 票價可能有延遲或快取，
@@ -236,7 +200,7 @@ export function TermsPage() {
             </p>
           </Section>
 
-          <Section id="privacy" title="八、個人資料">
+          <Section id="privacy" title="六、個人資料">
             <p>
               <strong className="text-foreground">你的權利</strong>：依個人資料保護法第 3 條，
               你得請求查詢、閱覽、製給複本、補充或更正、停止蒐集處理利用，或刪除你的個人資料，
@@ -250,7 +214,7 @@ export function TermsPage() {
             </p>
           </Section>
 
-          <Section id="changes" title="九、條款與服務之變更、暫停與終止">
+          <Section id="changes" title="七、條款與服務之變更、暫停與終止">
             <ul className="ml-5 list-disc space-y-1">
               <li>
                 <strong className="text-foreground">條款修改</strong>：修改後於本頁公告並更新「最後更新」日期；
@@ -270,11 +234,10 @@ export function TermsPage() {
                 <strong className="text-foreground">航線異動</strong>：停止監控特定航線時，
                 通知受影響之訂閱者，並比照前項按比例退還
               </li>
-              <li>因違反第六節而遭終止者，不適用上述按比例退還</li>
             </ul>
           </Section>
 
-          <Section id="force-majeure" title="十、不可抗力">
+          <Section id="force-majeure" title="八、不可抗力">
             <p>
               因天災、戰爭、疫病、罷工、網路或電力中斷、政府命令，或第三方服務中斷
               （含票價資料來源、雲端、郵件或金流服務）等不可歸責於我們之事由，
@@ -283,7 +246,7 @@ export function TermsPage() {
             </p>
           </Section>
 
-          <Section id="governing-law" title="十一、準據法、管轄與其他">
+          <Section id="governing-law" title="九、準據法、管轄與其他">
             <ul className="ml-5 list-disc space-y-1">
               <li>本條款以中華民國法律為準據法</li>
               <li>
@@ -296,7 +259,7 @@ export function TermsPage() {
             </ul>
           </Section>
 
-          <Section id="contact" title="十二、客服聯絡方式">
+          <Section id="contact" title="十、客服聯絡方式">
             <p>
               請透過 <ContactLink /> 與我們聯繫。
             </p>
