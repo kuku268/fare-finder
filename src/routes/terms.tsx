@@ -14,16 +14,6 @@ const ROUTES = [
   { label: "台北 ✈ 曼谷", code: "TPE-BKK" },
 ];
 
-/** Sub-processors are disclosed by role, never by data-source name. */
-const PROCESSORS = [
-  { role: "雲端運算與資料儲存", who: "Amazon Web Services（美國）" },
-  { role: "帳號登入與身分驗證", who: "Supabase（新加坡）" },
-  { role: "網站代管", who: "Vercel（美國）" },
-  { role: "網域與郵件轉寄", who: "Cloudflare（美國）" },
-  { role: "電子郵件寄送", who: "Resend（美國）" },
-  { role: "信用卡代收與定期定額扣款", who: "綠界科技股份有限公司（台灣）" },
-];
-
 function Section({
   id,
   title,
@@ -263,67 +253,6 @@ export function TermsPage() {
           </Section>
 
           <Section id="privacy" title="八、個人資料">
-            <p>
-              依個人資料保護法第 8 條，於蒐集你的個人資料前，向你告知下列事項：
-            </p>
-            <ul className="ml-5 list-disc space-y-1">
-              <li>
-                <strong className="text-foreground">蒐集者</strong>：Flight Price Notifier
-                機票票價通知服務之經營者
-              </li>
-              <li>
-                <strong className="text-foreground">蒐集目的</strong>：提供本服務，
-                包括帳號登入與身分識別、票價通知、訂閱與收費管理、客服聯繫
-              </li>
-              <li>
-                <strong className="text-foreground">個資類別</strong>：你的 Email、
-                你設定的航線與目標價、訂閱與付款狀態紀錄（
-                <strong className="text-foreground">不含信用卡號、有效期限或安全碼</strong>
-                ）、以及你主動於聯絡表單填寫的姓名、國家、Email、電話與需求說明
-              </li>
-              <li>
-                <strong className="text-foreground">利用期間</strong>：自你開始使用本服務起，
-                至你請求刪除或訂閱結束為止；依法令應保存之交易紀錄，保存至法定期間屆滿
-              </li>
-              <li>
-                <strong className="text-foreground">利用地區</strong>：中華民國，
-                以及下列委外服務商之伺服器所在地（
-                <strong className="text-foreground">包含境外</strong>）
-              </li>
-              <li>
-                <strong className="text-foreground">利用對象與方式</strong>：本服務本身，
-                以及為提供本服務所必要之委外服務商（見下表）。
-                我們<strong className="text-foreground">不會將你的資料販售，
-                或提供給與本服務無關的第三方</strong>
-              </li>
-              <li>
-                <strong className="text-foreground">不提供的影響</strong>：Email
-                為提供本服務所必需，未提供者無法使用本服務
-              </li>
-            </ul>
-            <div className="overflow-x-auto">
-              <table className="mt-2 w-full min-w-[22rem] border-collapse text-left text-xs">
-                <thead>
-                  <tr className="border-b border-border/60 text-foreground">
-                    <th className="py-2 pr-4 font-medium">用途</th>
-                    <th className="py-2 font-medium">委外服務商（所在地）</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PROCESSORS.map((p) => (
-                    <tr key={p.role} className="border-b border-border/40 last:border-b-0">
-                      <td className="py-2 pr-4 align-top">{p.role}</td>
-                      <td className="py-2 align-top">{p.who}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p>
-              上述委外處理中，部分服務商之伺服器位於國外，
-              因此你的個人資料<strong className="text-foreground">會有國際傳輸</strong>。
-              使用本服務即表示你了解並同意此必要之傳輸。
-            </p>
             <p>
               <strong className="text-foreground">你的權利</strong>：依個人資料保護法第 3 條，
               你得請求查詢、閱覽、製給複本、補充或更正、停止蒐集處理利用，或刪除你的個人資料。
