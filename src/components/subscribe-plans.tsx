@@ -224,12 +224,10 @@ export function SubscribePlans({ email }: { email: string }) {
         <ul className="mt-2 space-y-2">
           <li>
             本服務<strong className="font-medium text-foreground">只提供票價比較與通知，不販售、也不代訂機票</strong>。
-            通知信中的連結會把你導向第三方機票搜尋平台，實際售票者是其上架的各家訂票平台。
           </li>
           <li>
             <strong className="font-medium text-foreground">我們不審核、也不背書這些訂票平台</strong>
-            的營運狀況、退改票政策、客服品質或交易安全。下單前請自行確認賣方的可靠性與退改規則；
-            與訂票平台之間的交易爭議，請直接向該平台或發卡機構處理。
+            的營運狀況、退改票政策、客服品質或交易安全。
           </li>
           <li>
             請注意，<strong className="font-medium text-foreground">有些票價不含託運行李與其他附加費用</strong>，
