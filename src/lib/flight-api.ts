@@ -35,6 +35,10 @@ export type Subscription = {
   subscription_status?: SubscriptionStatus;
   /** Paid-through date, e.g. "2026-09-30". Present once a charge has landed. */
   current_period_end_date?: string;
+  /** Terms version the subscriber agreed to at checkout. */
+  terms_version?: string;
+  /** ISO-8601 UTC timestamp of that agreement. */
+  consent_at?: string;
 };
 
 async function readError(res: Response) {
@@ -69,6 +73,14 @@ export async function saveSubscription(input: {
   email: string;
   plan_name: PlanName;
   target_price: number;
+  /**
+   * Consent to immediate provisioning (and hence the waiver of the 7-day
+   * cooling-off period, 消保法 §19). Sent on every call; the backend records it
+   * on the rows it creates for checkout. Without a stored version + timestamp
+   * the "no refund for the current period" clause has nothing to stand on.
+   */
+  terms_version?: string;
+  consent_at?: string;
 }): Promise<Subscription | null> {
   const res = await fetch(`${FLIGHT_API_URL}/subscribe`, {
     method: "POST",

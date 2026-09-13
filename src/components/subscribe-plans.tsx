@@ -6,8 +6,10 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TERMS_VERSION } from "@/lib/terms-version";
 import {
   cancelSubscription,
   listSubscriptions,
@@ -96,6 +98,12 @@ export function SubscribePlans({ email }: { email: string }) {
   });
   const [saving, setSaving] = useState<PlanName | null>(null);
   const [cancelling, setCancelling] = useState<PlanName | null>(null);
+  /**
+   * Consent to immediate provisioning. Gates every card whose CTA would start a
+   * checkout — NOT "更新目標價", which charges nothing. Deliberately unchecked on
+   * mount and never persisted: a pre-ticked box is not 事先同意.
+   */
+  const [consent, setConsent] = useState(false);
 
   const byPlan = useMemo(() => {
     const map = {} as Partial<Record<PlanName, Subscription>>;
@@ -147,14 +155,30 @@ export function SubscribePlans({ email }: { email: string }) {
       toast.error("請輸入有效的目標價（NT$）");
       return;
     }
+    // Paid rows only update the target price in place, so no consent is needed;
+    // everything else hands the browser to ECPay and does need it.
+    const status = statusOf(byPlan[plan.name]);
+    const needsCheckout = status !== "active" && status !== "cancelled";
+    if (needsCheckout && !consent) {
+      toast.error("請先勾選下方的同意事項", {
+        description: "付款前需要你確認同意立即開通、且當期不適用七日猶豫期。",
+      });
+      return;
+    }
     setSaving(plan.name);
     try {
       // Returns null when it has handed the browser to ECPay's cashier.
-      const saved = await saveSubscription({
-        email,
-        plan_name: plan.name,
-        target_price: Math.round(target),
-      });
+      const saved = await saveSubscription(
+        needsCheckout
+          ? {
+              email,
+              plan_name: plan.name,
+              target_price: Math.round(target),
+              terms_version: TERMS_VERSION,
+              consent_at: new Date().toISOString(),
+            }
+          : { email, plan_name: plan.name, target_price: Math.round(target) },
+      );
       if (!saved) return;
       setSubs((prev) => [
         ...(prev ?? []).filter((s) => s.plan_name !== plan.name),
@@ -192,7 +216,7 @@ export function SubscribePlans({ email }: { email: string }) {
     <section className="mt-8">
       <h2 className="text-lg font-semibold tracking-tight text-foreground">追蹤航線</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        月訂閱 NT${twd.format(MONTHLY_TWD)}，設定目標價後每 30 分鐘檢查一次，低於目標就寄信通知你。隨時可取消。
+        月訂閱 NT${twd.format(MONTHLY_TWD)}，設定目標價後約每 30 分鐘檢查一次，低於目標就寄信通知你。隨時可取消。
       </p>
 
       <div className="mt-4 rounded-lg border border-border/60 bg-muted/40 p-4 text-xs leading-relaxed text-muted-foreground">
@@ -219,6 +243,38 @@ export function SubscribePlans({ email }: { email: string }) {
           </Link>
           。
         </p>
+
+        <div className="mt-4 flex items-start gap-2.5 rounded-md border border-border/60 bg-background p-3">
+          <Checkbox
+            id="terms-consent"
+            checked={consent}
+            onCheckedChange={(v) => setConsent(v === true)}
+            className="mt-0.5"
+            aria-describedby="terms-consent-note"
+          />
+          <div className="space-y-1">
+            <Label
+              htmlFor="terms-consent"
+              className="cursor-pointer text-xs font-normal leading-relaxed text-foreground"
+            >
+              我已閱讀並同意{" "}
+              <Link
+                to="/terms"
+                className="text-primary underline underline-offset-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                服務條款與退款政策
+              </Link>
+              ，並同意本服務於付款完成後
+              <strong className="font-medium">立即開通</strong>；
+              我了解依《通訊交易解除權合理例外情事適用準則》第 2 條第 5 款，
+              <strong className="font-medium">當期費用不適用七日猶豫期之無條件解除權</strong>。
+            </Label>
+            <p id="terms-consent-note" className="text-[11px] text-muted-foreground">
+              勾選後才能前往付款。已在付費中的航線調整目標價不需勾選，也不會重複扣款。
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 4-up from lg. Safe now that the route name has its own full-width row —
@@ -231,6 +287,8 @@ export function SubscribePlans({ email }: { email: string }) {
           const busyCancel = cancelling === plan.name;
           const paid = status === "active" || status === "cancelled";
 
+          // Everything that is not already paid goes through ECPay.
+          const needsConsent = !paid;
           const cta = paid
             ? "更新目標價"
             : status === "pending_payment"
@@ -310,7 +368,10 @@ export function SubscribePlans({ email }: { email: string }) {
                 <div className="flex flex-col gap-1.5">
                   <Button
                     className="w-full"
-                    disabled={busy || busyCancel || subs === null}
+                    disabled={busy || busyCancel || subs === null || (needsConsent && !consent)}
+                    {...(needsConsent && !consent
+                      ? { title: "請先勾選上方的同意事項" }
+                      : {})}
                     onClick={() => void handleSubmit(plan)}
                   >
                     {busy ? <Loader2 className="animate-spin" /> : null}
