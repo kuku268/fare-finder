@@ -6,6 +6,7 @@ import { TERMS_UPDATED_LABEL } from "@/lib/terms-version";
 import { usePageMeta } from "@/lib/use-page-meta";
 
 const MONTHLY_TWD = 200;
+const SUPPORT_EMAIL = "support@flymail.viaoneway.com";
 
 const ROUTES = [
   { label: "台北 ✈ 東京", code: "TPE-TYO" },
@@ -35,11 +36,14 @@ function Section({
   );
 }
 
-function ContactLink() {
+function SupportEmail() {
   return (
-    <Link to="/contact" className="font-medium text-primary underline underline-offset-4">
-      聯絡表單
-    </Link>
+    <a
+      href={`mailto:${SUPPORT_EMAIL}`}
+      className="font-medium text-primary underline underline-offset-4"
+    >
+      {SUPPORT_EMAIL}
+    </a>
   );
 }
 
@@ -138,7 +142,7 @@ export function TermsPage() {
             <p>
               取消後，<strong className="text-foreground">已付費的當期服務持續到期末</strong>，
               期間照常收到通知，期末後訂閱自動結束。
-              操作上有困難，也可透過 <ContactLink /> 請我們協助取消。
+              操作上有困難，也可來信 <SupportEmail /> 請我們協助取消。
             </p>
           </Section>
 
@@ -159,7 +163,7 @@ export function TermsPage() {
             </p>
             <p>
               若發生<strong className="text-foreground">重複扣款、金額錯誤等付款異常</strong>，
-              請透過 <ContactLink /> 聯繫，我們查證後全額退還。
+              請來信 <SupportEmail /> 聯繫，我們查證後全額退還。
             </p>
             <p>
               <strong className="text-foreground">扣款有疑義請先聯繫我們</strong>，通常較快解決。
@@ -204,7 +208,7 @@ export function TermsPage() {
             <p>
               <strong className="text-foreground">你的權利</strong>：依個人資料保護法第 3 條，
               你得請求查詢、閱覽、製給複本、補充或更正、停止蒐集處理利用，或刪除你的個人資料，
-              請透過 <ContactLink /> 提出。
+              請來信 <SupportEmail /> 提出。
             </p>
             <p>
               <strong className="text-foreground">刪除請求的限制</strong>：為免影響扣款與對帳，
@@ -261,7 +265,7 @@ export function TermsPage() {
 
           <Section id="contact" title="十、客服聯絡方式">
             <p>
-              請透過 <ContactLink /> 與我們聯繫。
+              客服信箱：<SupportEmail />
             </p>
             <p>服務時間：週一至週五 10:00–18:00（台灣時間）。我們會盡快回覆。</p>
             <p>網站：https://fly.viaoneway.com</p>

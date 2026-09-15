@@ -8,5 +8,5 @@
  *
  * Keep the label in sync: it is what the page prints as "最後更新".
  */
-export const TERMS_VERSION = "2026-09-13";
-export const TERMS_UPDATED_LABEL = "2026 年 9 月 13 日";
+export const TERMS_VERSION = "2026-09-15";
+export const TERMS_UPDATED_LABEL = "2026 年 9 月 15 日";

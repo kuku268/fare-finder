@@ -63,12 +63,6 @@ export function LandingPage() {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-          <Link
-            to="/contact"
-            className="hidden items-center justify-center rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent sm:inline-flex"
-          >
-            Contact Sale / 聯絡業務
-          </Link>
           {signedIn ? (
             <Link
               to="/app"
@@ -178,6 +172,12 @@ export function LandingPage() {
           >
             服務條款與退款政策
           </Link>
+          <a
+            href="mailto:support@flymail.viaoneway.com"
+            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            客服信箱：support@flymail.viaoneway.com
+          </a>
           <p className="text-xs text-muted-foreground/70">
             © 2026 Flight Price Notifier
           </p>
