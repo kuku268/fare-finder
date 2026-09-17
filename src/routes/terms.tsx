@@ -88,7 +88,7 @@ export function TermsPage() {
           <Section id="service" title="一、服務內容">
             <p>
               「Flight Price Notifier（機票票價通知服務）」是一項<strong className="text-foreground">數位訂閱服務</strong>：
-              我們持續監控指定航線的票價，低於你設定的目標價時以 Email 通知你，並附上訂票連結。
+              我們持續監控指定航線的來回票價，低於你設定的目標價時以 Email 通知你，並附上訂票連結。
             </p>
             <p>
               <strong className="text-foreground">本服務不販售機票、不代訂機票、不收取任何票款。</strong>
