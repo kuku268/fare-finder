@@ -223,7 +223,7 @@ export function SubscribePlans({ email }: { email: string }) {
         <p className="font-medium text-foreground">訂閱前請先了解</p>
         <ul className="mt-2 space-y-2">
           <li>
-            本服務<strong className="font-medium text-foreground">只提供票價比較與通知，不販售、也不代訂機票</strong>。
+            本服務<strong className="font-medium text-foreground">只提供來回票價比較與通知，不販售、也不代訂機票</strong>。
           </li>
           <li>
             <strong className="font-medium text-foreground">我們不審核、也不背書這些訂票平台</strong>
