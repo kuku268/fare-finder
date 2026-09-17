@@ -255,8 +255,7 @@ export function TermsPage() {
               <li>本條款以中華民國法律為準據法</li>
               <li>
                 因本條款所生之爭議，除法律另有強制規定外，雙方同意以
-                <strong className="text-foreground">消費者住所地之地方法院</strong>為第一審管轄法院；
-                住所地不明者，以臺灣臺北地方法院為第一審管轄法院
+                <strong className="text-foreground">臺灣桃園地方法院</strong>為第一審管轄法院
               </li>
               <li>部分條文如經認定無效，不影響其餘條文之效力</li>
               <li>我們未行使或延遲行使本條款之權利，不構成拋棄該權利</li>
