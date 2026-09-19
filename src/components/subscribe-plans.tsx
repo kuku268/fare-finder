@@ -104,6 +104,16 @@ export function SubscribePlans({ email }: { email: string }) {
    * mount and never persisted: a pre-ticked box is not 事先同意.
    */
   const [consent, setConsent] = useState(false);
+  /** Briefly rings the consent box when someone tries to pay without ticking it. */
+  const [nudgeConsent, setNudgeConsent] = useState(false);
+
+  const pointToConsent = () => {
+    const box = document.getElementById("terms-consent");
+    box?.scrollIntoView({ behavior: "smooth", block: "center" });
+    box?.focus({ preventScroll: true });
+    setNudgeConsent(true);
+    window.setTimeout(() => setNudgeConsent(false), 1600);
+  };
 
   const byPlan = useMemo(() => {
     const map = {} as Partial<Record<PlanName, Subscription>>;
@@ -160,9 +170,10 @@ export function SubscribePlans({ email }: { email: string }) {
     const status = statusOf(byPlan[plan.name]);
     const needsCheckout = status !== "active" && status !== "cancelled";
     if (needsCheckout && !consent) {
-      toast.error("請先勾選下方的同意事項", {
+      toast.error("請先勾選上方的同意事項", {
         description: "付款前需要你確認同意立即開通、且當期不適用七日猶豫期。",
       });
+      pointToConsent();
       return;
     }
     setSaving(plan.name);
@@ -242,7 +253,11 @@ export function SubscribePlans({ email }: { email: string }) {
           。
         </p>
 
-        <div className="mt-4 flex items-start gap-2.5 rounded-md border border-border/60 bg-background p-3">
+        <div
+          className={`mt-4 flex items-start gap-2.5 rounded-md border bg-background p-3 transition-shadow ${
+            nudgeConsent ? "border-primary ring-2 ring-primary/40" : "border-border/60"
+          }`}
+        >
           <Checkbox
             id="terms-consent"
             checked={consent}
@@ -328,7 +343,7 @@ export function SubscribePlans({ email }: { email: string }) {
 
                 {status === "pending_payment" ? (
                   <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
-                    尚未完成付款，目前不會收到通知。按「完成付款」前往綠界，月費 NT${twd.format(MONTHLY_TWD)}。
+                    請勾選以上同意政策後再按「完成付款」
                   </p>
                 ) : null}
 
@@ -366,10 +381,10 @@ export function SubscribePlans({ email }: { email: string }) {
                 <div className="flex flex-col gap-1.5">
                   <Button
                     className="w-full"
-                    disabled={busy || busyCancel || subs === null || (needsConsent && !consent)}
-                    {...(needsConsent && !consent
-                      ? { title: "請先勾選上方的同意事項" }
-                      : {})}
+                    // Not disabled for missing consent: the consent flag resets on every
+                    // page load (e.g. back from ECPay), and a greyed-out 完成付款 with no
+                    // explanation read as a dead end. Clicking points at the checkbox.
+                    disabled={busy || busyCancel || subs === null}
                     onClick={() => void handleSubmit(plan)}
                   >
                     {busy ? <Loader2 className="animate-spin" /> : null}
