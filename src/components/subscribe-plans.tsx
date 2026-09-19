@@ -12,8 +12,10 @@ import { Label } from "@/components/ui/label";
 import { TERMS_VERSION } from "@/lib/terms-version";
 import {
   cancelSubscription,
+  getLatestPrices,
   listSubscriptions,
   saveSubscription,
+  type LivePrice,
   type PlanName,
   type Subscription,
   type SubscriptionStatus,
@@ -23,15 +25,15 @@ type Plan = {
   name: PlanName;
   label: string;
   route: string;
-  /** Rough current cheapest fare, shown so people pick a realistic budget. */
+  /** Fallback cheapest fare, used only until the live price from /prices loads. */
   hint: number;
 };
 
 const PLANS: Plan[] = [
-  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6410 },
-  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 4701 },
-  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 20388 },
-  { name: "bangkok", label: "台北 ✈ 曼谷", route: "TPE-BKK", hint: 6398 },
+  { name: "tokyo", label: "台北 ✈ 東京", route: "TPE-TYO", hint: 6547 },
+  { name: "seoul", label: "台北 ✈ 首爾", route: "TPE-SEL", hint: 5127 },
+  { name: "london", label: "台北 ✈ 倫敦", route: "TPE-LON", hint: 20345 },
+  { name: "bangkok", label: "台北 ✈ 曼谷", route: "TPE-BKK", hint: 5349 },
 ];
 
 const MONTHLY_TWD = 200;
@@ -96,6 +98,7 @@ export function SubscribePlans({ email }: { email: string }) {
     london: "",
     bangkok: "",
   });
+  const [prices, setPrices] = useState<Partial<Record<PlanName, LivePrice>>>({});
   const [saving, setSaving] = useState<PlanName | null>(null);
   const [cancelling, setCancelling] = useState<PlanName | null>(null);
   /**
@@ -146,6 +149,16 @@ export function SubscribePlans({ email }: { email: string }) {
       cancelled = true;
     };
   }, [email]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getLatestPrices().then((p) => {
+      if (!cancelled) setPrices(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // ECPay returns the browser here (via the redirect Lambda) after checkout.
   useEffect(() => {
@@ -298,6 +311,7 @@ export function SubscribePlans({ email }: { email: string }) {
           const status = statusOf(sub);
           const busy = saving === plan.name;
           const busyCancel = cancelling === plan.name;
+          const lowest = prices[plan.name]?.price ?? plan.hint;
           const paid = status === "active" || status === "cancelled";
 
           // Everything that is not already paid goes through ECPay.
@@ -334,12 +348,12 @@ export function SubscribePlans({ email }: { email: string }) {
 
                 {/* The saved target moved next to the input's label (below) — as its
                     own row it just repeated the number already in the input. */}
-                {!sub ? (
-                  <p className="text-sm text-muted-foreground">
-                    目前最低約{" "}
-                    <span className="font-medium text-foreground">NT${twd.format(plan.hint)}</span>
-                  </p>
-                ) : null}
+                {/* Shown on every card, subscribed or not: comparing it with the target
+                    is how people tell "no email yet" apart from "something broke". */}
+                <p className="text-sm text-muted-foreground">
+                  目前最低約{" "}
+                  <span className="font-medium text-foreground">NT${twd.format(lowest)}</span>
+                </p>
 
                 {status === "pending_payment" ? (
                   <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
@@ -370,7 +384,7 @@ export function SubscribePlans({ email }: { email: string }) {
                   <Input
                     id={`target-${plan.name}`}
                     inputMode="numeric"
-                    placeholder={String(plan.hint)}
+                    placeholder={String(lowest)}
                     value={drafts[plan.name]}
                     onChange={(e) =>
                       setDrafts((d) => ({ ...d, [plan.name]: e.target.value.replace(/[^0-9]/g, "") }))

@@ -51,6 +51,31 @@ async function readError(res: Response) {
   return `${res.status} ${res.statusText}`;
 }
 
+/** Latest cheapest round-trip fare the parser saw for a route (refreshed ~every 30 min). */
+export type LivePrice = {
+  route: string;
+  price: number;
+  /** Departure month the fare is for, e.g. "2026-10". */
+  month: string;
+  /** ISO-8601 UTC time of the check that produced it. */
+  checked_at: string;
+};
+
+/**
+ * Cheapest fares from the parser's last run, keyed by plan. Purely cosmetic
+ * (the placeholder hint on each card), so failures resolve to `{}` and the
+ * cards fall back to their built-in numbers instead of showing an error.
+ */
+export async function getLatestPrices(): Promise<Partial<Record<PlanName, LivePrice>>> {
+  try {
+    const res = await fetch(`${FLIGHT_API_URL}/prices`);
+    if (!res.ok) return {};
+    return (await res.json()) as Partial<Record<PlanName, LivePrice>>;
+  } catch {
+    return {};
+  }
+}
+
 export async function listSubscriptions(email: string): Promise<Subscription[]> {
   const url = `${FLIGHT_API_URL}/subscriptions?email=${encodeURIComponent(email)}`;
   const res = await fetch(url);
