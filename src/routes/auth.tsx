@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { authErrorMessage } from "@/lib/auth-errors";
 import { usePageMeta } from "@/lib/use-page-meta";
 
 export type AuthTab = "signin" | "signup";
@@ -30,6 +31,23 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [checkEmail, setCheckEmail] = useState<string | null>(null);
+
+  const handleResend = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(authErrorMessage(error));
+      return;
+    }
+    toast.success("驗證信已重新寄出，請到信箱查看（也請檢查垃圾郵件匣）。");
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -43,7 +61,8 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(authErrorMessage(error));
+      if (error.code === "email_not_confirmed") setUnconfirmed(true);
       return;
     }
     navigate("/app");
@@ -52,14 +71,19 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: window.location.origin },
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(authErrorMessage(error));
+      return;
+    }
+    if (!data.session) {
+      // Email confirmation is on: no session until the link is clicked.
+      setCheckEmail(email);
       return;
     }
     toast.success("帳號已建立，歡迎加入！");
@@ -135,10 +159,51 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
                   {loading && <Loader2 className="animate-spin" />}
                   登入
                 </Button>
+                {unconfirmed && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={loading}
+                    onClick={handleResend}
+                  >
+                    重新寄送驗證信
+                  </Button>
+                )}
+                <p className="text-center text-sm">
+                  <Link
+                    to="/forgot-password"
+                    className="text-muted-foreground underline-offset-4 hover:underline"
+                  >
+                    忘記密碼？
+                  </Link>
+                </p>
               </form>
             </TabsContent>
 
             <TabsContent value="signup">
+              {checkEmail ? (
+                <div className="mt-4 space-y-4 text-center text-sm">
+                  <p>
+                    驗證信已寄到 <span className="font-medium">{checkEmail}</span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    請到信箱點信中的連結完成註冊，之後就能登入。
+                    <br />
+                    沒收到的話，請檢查垃圾郵件匣。
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={loading}
+                    onClick={handleResend}
+                  >
+                    {loading && <Loader2 className="animate-spin" />}
+                    重新寄送驗證信
+                  </Button>
+                </div>
+              ) : (
               <form onSubmit={handleSignUp} className="mt-4 space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
@@ -170,6 +235,7 @@ export function AuthPage({ tab }: { tab: AuthTab }) {
                   建立帳號
                 </Button>
               </form>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>
